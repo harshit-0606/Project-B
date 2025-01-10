@@ -7,6 +7,7 @@ function App() {
 
   //useRef hook for good userinterface(pta cahle ki kuch kaam hua hai)
   const passwordRef = useRef(null);
+  const buttonRef = useRef("");
 
 
   const passwordGenerator = useCallback(
@@ -29,25 +30,28 @@ function App() {
     [length, numAllowed, charAllowed, setPassword]
   );
 
-  const copyPasswordToClipBoard = useCallback(async()=>{
-    passwordRef.current?.select()
-   await window.navigator.clipboard.writeText(password);
-   alert('Password successfully copied to clipboard!')
+   // useEffect to generate password when settings change
 
-    // .then(() => {
-    //   // Show an alert once the password is copied successfully
-    //   alert('Password successfully copied to clipboard!');
-    // })
-    .catch((err) => {
-      // Handle any errors that occur during the copy process
-      console.error('Failed to copy: ', err);
-    });
-  },[password])
-  
-  // run yha se ho raha hai program
-  useEffect(()=>{
-      passwordGenerator();
-  },[length, numAllowed, charAllowed ])
+   useEffect(() => {
+    // Code to run when the component mounts or updates
+    passwordGenerator();
+ }, [numAllowed,charAllowed,length , setPassword]);
+
+ 
+// Function to copy password to clipboard
+
+const copyPassword = () => {
+ passwordRef.current?.select();
+ 
+ window.navigator.clipboard.writeText(password)
+ buttonRef.current.style.backgroundColor = "#4CAF50";
+ setTimeout(() => {
+   buttonRef.current.style.backgroundColor = "blue";
+ }, 1250);
+
+
+}
+ 
 
   return (
     <>
@@ -63,7 +67,8 @@ function App() {
             readOnly
           />
           <button
-          onClick={copyPasswordToClipBoard} className="outline-none w-20 py-1 px-3 bg-blue-500 text-lg hover:bg-blue-300">
+          ref={buttonRef}
+          onClick={copyPassword} className="outline-none w-20 py-1 px-3 bg-blue-500 text-lg hover:bg-blue-300">
             Copy
           </button>
         </div>
